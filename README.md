@@ -1,6 +1,6 @@
 
 ## Release Notes
-0.1 Base Release
+0.1 Base Release Get Requests Implemented. 
 
 ## Notes
 This is an unofficial powershell module to allow access to the Pax8 API. I am not associated with Pax8 other than as a customer.
