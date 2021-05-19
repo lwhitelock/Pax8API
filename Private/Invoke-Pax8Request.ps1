@@ -1,37 +1,50 @@
-function Invoke-HuduRequest {
+function Invoke-Pax8Request {
 	Param(
 		[string]$Method,
 		[string]$Resource,
+		[string]$ResourceFilter,
 		[string]$Body
 	)
 	
-	try {
-		if (($Method -eq "put") -or ($Method -eq "post") -or ($Method -eq "delete")) {
-			$HuduAPIKey = Get-HuduApiKey
-			$HuduBaseURL = Get-HuduBaseURL
-			$HuduResult = Invoke-RestMethod -method $method -uri ($HuduBaseURL + $Resource) `
-				-headers @{'x-api-key' = (New-Object PSCredential "user",$HuduAPIKey).GetNetworkCredential().Password;} `
-				-ContentType 'application/json; charset=utf-8' -body $Body			
-
-		} else {	
-			$HuduAPIKey = Get-HuduApiKey
-			$HuduBaseURL = Get-HuduBaseURL
-			$HuduResult = Invoke-RestMethod -method $method -uri ($HuduBaseURL + $Resource) `
-				-headers @{'x-api-key' = (New-Object PSCredential "user",$HuduAPIKey).GetNetworkCredential().Password;} `
-				-ContentType 'application/json; charset=utf-8'
-		}
-
-
-	} catch {
-		if ("$_".trim() -eq "Retry later" -or "$_".trim() -eq "The remote server returned an error: (429) Too Many Requests."){
-			Write-Host "Hudu API Rate limited. Waiting 30 Seconds then trying again" -foregroundcolor red
-			Start-Sleep 30
-			$HuduResult = Invoke-HuduRequest -Method $method -Resource $resource -Body $Body
-		} else {
-			Write-Error "'$_'"
-		}
+	if (!$script:Pax8Token) {
+		Write-Host "Please run 'Connect-Pax8' first" -ForegroundColor Red
 	}
+ else {
 	
-	return $HuduResult
+		$headers = @{
+			Authorization = "Bearer $($script:Pax8Token)"
+		}
+
+		try {
+			if (($Method -eq "put") -or ($Method -eq "post") -or ($Method -eq "delete")) {
+				$Response = Invoke-WebRequest -method $method -uri ($Script:Pax8BaseURL + $Resource) -ContentType 'application/json' -body $Body -Headers $headers -ea stop
+				$Result = $Response | ConvertFrom-Json -depth 100
+			}
+			else {
+				$Complete = $false
+				$PageNo = 0
+				$Result = do {
+					$Response = Invoke-WebRequest -method $method -uri ($Script:Pax8BaseURL + $Resource + "?page=$PageNo&size=200" + $ResourceFilter) -ContentType 'application/json' -Headers $headers -ea stop
+					$JSON = $Response | ConvertFrom-Json -Depth 100
+					if ($JSON.Page) {
+						if (($JSON.Page.totalPages - 1) -eq $PageNo -or $JSON.Page.totalPages -eq 0) {
+							$Complete = $true
+						}
+						$PageNo = $PageNo + 1
+						$JSON.content
+					}
+					else {
+						$Complete = $true
+						$JSON
+					}
+				} while ($Complete -eq $false)
+			}
+		}
+		catch {
+			Write-Host "An Error Occured $_" -ForegroundColor Red
+		}
+		
+		return $Result
+	}
 	
 }
