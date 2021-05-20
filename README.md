@@ -1,4 +1,6 @@
 ## Alpha
+This module is still in development, get methods are implemented so far.
+
 ## Release Notes
 0.1 Base Release Get Requests Implemented. 
 
