@@ -1,4 +1,5 @@
 function Get-Pax8UsageSummaries {
+  [CmdletBinding()]
   Param(
     [ValidateSet("resourceGroup", "currentCharges", "partnerTotal")]    
     [string]$sort,
@@ -12,8 +13,7 @@ function Get-Pax8UsageSummaries {
 
   if ($id) {
     $Usage = Invoke-Pax8Request -method get -resource "usage-summaries/$id"
-  }
-  else {
+  } else {
     
     if ($subscriptionId) {
 
@@ -29,7 +29,7 @@ function Get-Pax8UsageSummaries {
       }   
 
       $Usage = Invoke-Pax8Request -method get -resource "subscriptions/$subscriptionId/usage-summaries" -ResourceFilter $resourcefilter
-    } else{
+    } else {
       Write-Host "Please provide subscriptionId" -ForegroundColor Red
       $Usage = $null
     }

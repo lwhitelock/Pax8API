@@ -1,4 +1,5 @@
 function Get-Pax8Contacts {
+  [CmdletBinding()]
   Param(
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias('companyId')]
@@ -8,8 +9,7 @@ function Get-Pax8Contacts {
   Process {
     if ($contactId) {
       $Contacts = Invoke-Pax8Request -method get -resource "companies/$id/contacts/$contactId"
-    }
-    else {
+    } else {
       $Contacts = Invoke-Pax8Request -method get -resource "companies/$id/contacts"
     }
     if ($Contacts) {

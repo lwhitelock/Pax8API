@@ -1,4 +1,5 @@
 function Get-Pax8Subscriptions {
+  [CmdletBinding()]
   Param(
     [ValidateSet("quantity", "startDate", "endDate", "createdDate", "billingStart", "price")]    
     [string]$sort,
@@ -13,8 +14,7 @@ function Get-Pax8Subscriptions {
 
   if ($subscriptionId) {
     $Subscriptions = Invoke-Pax8Request -method get -resource "subscriptions/$subscriptionId"
-  }
-  else {
+  } else {
 
     $resourcefilter = ''
 

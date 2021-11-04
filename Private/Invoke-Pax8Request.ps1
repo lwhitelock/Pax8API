@@ -1,4 +1,5 @@
 function Invoke-Pax8Request {
+	[CmdletBinding()]
 	Param(
 		[string]$Method,
 		[string]$Resource,
@@ -8,8 +9,7 @@ function Invoke-Pax8Request {
 	
 	if (!$script:Pax8Token) {
 		Write-Host "Please run 'Connect-Pax8' first" -ForegroundColor Red
-	}
- else {
+	} else {
 	
 		$headers = @{
 			Authorization = "Bearer $($script:Pax8Token)"
@@ -19,8 +19,7 @@ function Invoke-Pax8Request {
 			if (($Method -eq "put") -or ($Method -eq "post") -or ($Method -eq "delete")) {
 				$Response = Invoke-WebRequest -method $method -uri ($Script:Pax8BaseURL + $Resource) -ContentType 'application/json' -body $Body -Headers $headers -ea stop
 				$Result = $Response | ConvertFrom-Json -depth 100
-			}
-			else {
+			} else {
 				$Complete = $false
 				$PageNo = 0
 				$Result = do {
@@ -32,16 +31,20 @@ function Invoke-Pax8Request {
 						}
 						$PageNo = $PageNo + 1
 						$JSON.content
-					}
-					else {
+					} else {
 						$Complete = $true
 						$JSON
 					}
 				} while ($Complete -eq $false)
 			}
-		}
-		catch {
-			Write-Host "An Error Occured $_" -ForegroundColor Red
+		} catch {
+			if ($_.Response.StatusCode -eq 429) {
+				Write-Warning "Rate limit exceeded. Waiting to try again."
+				Start-Sleep 8
+				$Result = Invoke-Pax8Request -Method $Method -Resource $Resource -ResourceFilter $ResourceFilter -Body $Body
+			} else {
+				Write-Error "An Error Occured $($_) "
+			}
 		}
 		
 		return $Result

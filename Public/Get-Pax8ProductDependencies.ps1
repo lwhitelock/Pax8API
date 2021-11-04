@@ -1,4 +1,5 @@
 function Get-Pax8ProductDependencies {
+  [CmdletBinding()]
   Param(
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
     [string]$id

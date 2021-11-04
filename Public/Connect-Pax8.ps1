@@ -1,4 +1,5 @@
 function Connect-Pax8 {
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$ClientID,
@@ -19,8 +20,7 @@ function Connect-Pax8 {
     try {
         $Response = Invoke-WebRequest -Method POST -Uri 'https://login.pax8.com/oauth/token' -ContentType 'application/json' -Body $json
         $script:Pax8Token = ($Response | ConvertFrom-Json).access_token
-    }
-    catch {
+    } catch {
         Write-Host $_ -ForegroundColor Red
     }
 

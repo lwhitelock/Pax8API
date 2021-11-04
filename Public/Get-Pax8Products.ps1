@@ -1,4 +1,5 @@
 function Get-Pax8Products {
+  [CmdletBinding()]
   Param(
     [ValidateSet("name", "vendor")]    
     [string]$sort,
@@ -8,8 +9,7 @@ function Get-Pax8Products {
 
   if ($id) {
     $Products = Invoke-Pax8Request -method get -resource "products/$id"
-  }
-  else {
+  } else {
 
     $resourcefilter = ''
     if ($sort) {

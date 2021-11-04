@@ -1,4 +1,5 @@
 function Get-Pax8InvoiceItems {
+  [CmdletBinding()]
   Param(
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
     [string]$id

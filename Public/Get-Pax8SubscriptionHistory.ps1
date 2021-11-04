@@ -1,4 +1,5 @@
 function Get-Pax8SubscriptionHistory {
+  [CmdletBinding()]
   Param(
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias('subscriptionId')]

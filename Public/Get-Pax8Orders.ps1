@@ -1,4 +1,5 @@
 function Get-Pax8Orders {
+  [CmdletBinding()]
   Param(
     [string]$companyId,
     [string]$orderId
@@ -6,8 +7,7 @@ function Get-Pax8Orders {
 
   if ($orderId) {
     $Orders = Invoke-Pax8Request -method get -resource "orders/$orderId"
-  }
-  else {
+  } else {
 
     $resourcefilter = ''
     if ($companyId) {
