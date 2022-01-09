@@ -18,13 +18,13 @@ function Invoke-Pax8Request {
 		try {
 			if (($Method -eq "put") -or ($Method -eq "post") -or ($Method -eq "delete")) {
 				$Response = Invoke-WebRequest -method $method -uri ($Script:Pax8BaseURL + $Resource) -ContentType 'application/json' -body $Body -Headers $headers -ea stop
-				$Result = $Response | ConvertFrom-Json -depth 100
+				$Result = $Response | ConvertFrom-Json
 			} else {
 				$Complete = $false
 				$PageNo = 0
 				$Result = do {
 					$Response = Invoke-WebRequest -method $method -uri ($Script:Pax8BaseURL + $Resource + "?page=$PageNo&size=200" + $ResourceFilter) -ContentType 'application/json' -Headers $headers -ea stop
-					$JSON = $Response | ConvertFrom-Json -Depth 100
+					$JSON = $Response | ConvertFrom-Json
 					if ($JSON.Page) {
 						if (($JSON.Page.totalPages - 1) -eq $PageNo -or $JSON.Page.totalPages -eq 0) {
 							$Complete = $true
