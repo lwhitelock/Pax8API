@@ -18,10 +18,10 @@ jobs:
         New-Item $ModuleFolderToPublish -ItemType Directory -Force | Out-Null
         dir $env:GITHUB_WORKSPACE
         Write-Output "Copying artifacts from $($env:GITHUB_WORKSPACE) to $ModuleFolderToPublish"
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "Public") -Destination $ModuleFolderToPublish -Recurse
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "Private") -Destination $ModuleFolderToPublish -Recurse
         Copy-Item (Join-Path $env:GITHUB_WORKSPACE "$ModuleName.psm1") -Destination $ModuleFolderToPublish
         Copy-Item (Join-Path $env:GITHUB_WORKSPACE "$ModuleName.psd1") -Destination $ModuleFolderToPublish
-        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "Public") -Destination $ModuleFolderToPublish
-        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "Private") -Destination $ModuleFolderToPublish
         Copy-Item (Join-Path $env:GITHUB_WORKSPACE "README.md") -Destination $ModuleFolderToPublish
         Copy-Item (Join-Path $env:GITHUB_WORKSPACE "LICENSE") -Destination $ModuleFolderToPublish
         Publish-Module -Name $ModuleName -NuGetApiKey $env:PSGALLERY_DEPLOY_KEY -Repository PSGallery
