@@ -1,0 +1,29 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Deploy
+      env:
+        PSGALLERY_DEPLOY_KEY: ${{ secrets.PSGALLERY_DEPLOY_KEY }}        
+      run: |
+        $ModuleName = "Pax8API"
+        $ModuleFolderPath = $env:PSModulePath.Split(":") | select -first 1
+        $ModuleFolderToPublish = Join-Path $ModuleFolderPath $ModuleName
+        New-Item $ModuleFolderToPublish -ItemType Directory -Force | Out-Null
+        dir $env:GITHUB_WORKSPACE
+        Write-Output "Copying artifacts from $($env:GITHUB_WORKSPACE) to $ModuleFolderToPublish"
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "Public") -Destination $ModuleFolderToPublish -Recurse
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "Private") -Destination $ModuleFolderToPublish -Recurse
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "$ModuleName.psm1") -Destination $ModuleFolderToPublish
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "$ModuleName.psd1") -Destination $ModuleFolderToPublish
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "README.md") -Destination $ModuleFolderToPublish
+        Copy-Item (Join-Path $env:GITHUB_WORKSPACE "LICENSE") -Destination $ModuleFolderToPublish
+        Publish-Module -Name $ModuleName -NuGetApiKey $env:PSGALLERY_DEPLOY_KEY -Repository PSGallery
+        Remove-Item $ModuleFolderToPublish -Force -Confirm:$false -Recurse
+      shell: pwsh
