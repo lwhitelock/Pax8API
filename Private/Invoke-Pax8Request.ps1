@@ -9,21 +9,23 @@ function Invoke-Pax8Request {
 	
 	if (!$script:Pax8Token) {
 		Write-Host "Please run 'Connect-Pax8' first" -ForegroundColor Red
-	} else {
+	}
+ else {
 	
 		$headers = @{
 			Authorization = "Bearer $($script:Pax8Token)"
 		}
 
 		try {
-			if (($Method -eq "put") -or ($Method -eq "post") -or ($Method -eq "delete")) {
-				$Response = Invoke-WebRequest -method $method -uri ($Script:Pax8BaseURL + $Resource) -ContentType 'application/json' -body $Body -Headers $headers -ea stop
+			if (($Method -eq 'put') -or ($Method -eq 'post') -or ($Method -eq 'delete')) {
+				$Response = Invoke-WebRequest -Method $method -Uri ($Script:Pax8BaseURL + $Resource) -ContentType 'application/json' -Body $Body -Headers $headers -UseBasicParsing -ea stop
 				$Result = $Response | ConvertFrom-Json
-			} else {
+			}
+			else {
 				$Complete = $false
 				$PageNo = 0
 				$Result = do {
-					$Response = Invoke-WebRequest -method $method -uri ($Script:Pax8BaseURL + $Resource + "?page=$PageNo&size=200" + $ResourceFilter) -ContentType 'application/json' -Headers $headers -ea stop
+					$Response = Invoke-WebRequest -Method $method -Uri ($Script:Pax8BaseURL + $Resource + "?page=$PageNo&size=200" + $ResourceFilter) -ContentType 'application/json' -Headers $headers -UseBasicParsing -ea stop
 					$JSON = $Response | ConvertFrom-Json
 					if ($JSON.Page) {
 						if (($JSON.Page.totalPages - 1) -eq $PageNo -or $JSON.Page.totalPages -eq 0) {
@@ -31,18 +33,21 @@ function Invoke-Pax8Request {
 						}
 						$PageNo = $PageNo + 1
 						$JSON.content
-					} else {
+					}
+					else {
 						$Complete = $true
 						$JSON
 					}
 				} while ($Complete -eq $false)
 			}
-		} catch {
+		}
+		catch {
 			if ($_.Response.StatusCode -eq 429) {
-				Write-Warning "Rate limit exceeded. Waiting to try again."
+				Write-Warning 'Rate limit exceeded. Waiting to try again.'
 				Start-Sleep 8
 				$Result = Invoke-Pax8Request -Method $Method -Resource $Resource -ResourceFilter $ResourceFilter -Body $Body
-			} else {
+			}
+			else {
 				Write-Error "An Error Occured $($_) "
 			}
 		}
