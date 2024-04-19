@@ -16,7 +16,7 @@ function Get-Pax8Companies {
   )
 
   if ($id) {
-    $Companies = Invoke-Pax8Request -method get -resource "companies/$id"
+    $Companies = Invoke-Pax8Request -method get -resource "company/$id"
   } else {
 
     $resourcefilter = ''
@@ -48,7 +48,7 @@ function Get-Pax8Companies {
       $resourcefilter = "$($resourcefilter)&status=$($status)"
     }
 
-    $Companies = Invoke-Pax8Request -method get -resource "companies" -ResourceFilter $resourcefilter
+    $Companies = Invoke-Pax8Request -method get -resource "company" -ResourceFilter $resourcefilter
   }
 
   return $Companies
