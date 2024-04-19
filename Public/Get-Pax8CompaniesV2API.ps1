@@ -48,7 +48,7 @@ function Get-Pax8CompaniesV2API {
       $resourcefilter = "$($resourcefilter)&status=$($status)"
     }
 
-    $Companies = Invoke-Pax8Request -method get -resource "company" -ResourceFilter $resourcefilter
+    $Companies = Invoke-Pax8Request -method get -resource "company" -ResourceFilter $resourcefilter -v2API:$true
   }
 
   return $Companies
