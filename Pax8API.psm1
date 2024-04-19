@@ -6,5 +6,6 @@ foreach ($import in @($Public)) {
         Write-Error -Message "Failed to import function $($import.FullName): $_"
     }
 }
-$script:Pax8BaseURL = 'https://app.pax8.com/p8p/api-v2/1/'
+$script:Pax8BaseURL = 'https://api.pax8.com/v1/'
+$script:Pax8BaseURLv2 = 'https://app.pax8.com/p8p/api-v2/1/'
 Export-ModuleMember -Function $Public.BaseName -Alias *
