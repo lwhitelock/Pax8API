@@ -2,6 +2,10 @@
 This module is still in development, get methods are implemented so far.
 
 ## Release Notes
+0.5 Added initial v2 Api support from mdewart-hummingbird
+
+0.4 Minor Bug Fixes
+
 0.3 Minor Bug Fixes and Formatting
 
 0.1 Base Release Get Requests Implemented. 
